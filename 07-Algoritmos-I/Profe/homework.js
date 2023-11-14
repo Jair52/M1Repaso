@@ -1,135 +1,142 @@
 "use strict";
+// No cambies los nombres de las funciones.
 
-/*
- Implementar la clase BinarySearchTree, definiendo los siguientes métodos recursivos:
-  - size: retorna la cantidad total de nodos del árbol
-  - insert: agrega un nodo en el lugar correspondiente
-  - contains: retorna true o false luego de evaluar si cierto valor existe dentro del árbol
-  - depthFirstForEach: recorre el árbol siguiendo el orden depth first (DFS) en cualquiera de sus variantes, 
-  según se indique por parámetro ("post-order", "pre-order", o "in-order"). Nota: si no se provee ningún 
-  parámetro, hará el recorrido "in-order" por defecto.
-  - breadthFirstForEach: recorre el árbol siguiendo el orden breadth first (BFS)
-  El ábrol utilizado para hacer los tests se encuentra representado en la imagen bst.png dentro del directorio homework.
-*/
-// function BinarySearchTree() {}
-
-function BinarySearchTree(value) {
-  this.value = value;
-  this.left = null;
-  this.right = null;
-}
-//todo: BST -> árbol binario de búsqueda    mayor o menor
-BinarySearchTree.prototype.insert = function (value) {
-  if (value > this.value) {
-    if (!this.right) {
-      // ({}) -> true    (null) -> false  <- !null <- true  ==>  this.right === null
-      this.right = new BinarySearchTree(value);
+function factorear(num) {
+  // <- 9
+  // Factorear el número recibido como parámetro y devolver en un array
+  // los factores por los cuales se va dividiendo a dicho número (De menor a mayor)
+  // Ej: factorear(180) --> [1, 2, 2, 3, 3, 5] Ya que 1x2x2x3x3x5 = 180 y son todos números primos
+  // Tu código:
+  // factorear(9) --> [1, 3, 3]     factorear(12) --> [1, 2, 2, 3]
+  // Iteración
+  const result = [1];
+  let baseDiv = 2;
+  while (num > 1) {
+    if (num % baseDiv === 0) {
+      // 5 % 2 => 0 NO  - 5 % 3 => 0 NO -  5 % 4 => 0 NO - 5 % 5 SI
+      result.push(baseDiv);
+      num = num / baseDiv;
     } else {
-      this.right.insert(value);
-    }
-  } else {
-    // por defecto queda aquí <=
-    if (!this.left) {
-      // ({}) -> true    (null) -> false  <- !null <- true  ==>  this.left === null
-      this.left = new BinarySearchTree(value);
-    } else {
-      this.left.insert(value);
+      console.log(baseDiv);
+      baseDiv++;
+      console.log(baseDiv);
     }
   }
-};
-
-BinarySearchTree.prototype.size = function () {
-  if (!this.left && !this.right) {
-    return 1;
-  }
-  if (!this.right) return 1 + this.left.size();
-  if (!this.left) return 1 + this.right.size();
-  if (this.left && this.right) return 1 + this.left.size() + this.right.size();
-};
-
-BinarySearchTree.prototype.contains = function (value) {
-  if (value === this.value) return true;
-  //   if(!this.right && !this.left){
-  //    return false
-  //   }
-  if (value > this.value) {
-    if (!this.right) return false;
-    else return this.right.contains(value);
-  } else {
-    // console.log("in")
-    if (!this.left) return false;
-    else return this.left.contains(value);
-  }
-};
-
-//TODO: RECORRER ARBOL
-// * In-order ->  left value right   LVR
-// var result=[]
-// RECURSION
-BinarySearchTree.prototype.depthFirstForEachSimple = function (result = []) {
-  // params por defecto
-  if (this.left) this.left.depthFirstForEachSimple(result);
-  result.push(this.value);
-  if (this.right) this.right.depthFirstForEachSimple(result);
   return result;
-};
-//   testArr = [];
-//   tree.depthFirstForEach(function(val){ testArr.push(val); }, 'in-order')
-//  cb(8)  =>  function(8){ testArr.push(8); } <= testArr = [8]
-BinarySearchTree.prototype.depthFirstForEach = function (cb, order) {
-  if (order === "pre-order") {
-    cb(this.value);
-    if (this.left) this.left.depthFirstForEach(cb, order);
-    if (this.right) this.right.depthFirstForEach(cb, order);
-  } else if (order === "post-order") {
-    if (this.left) this.left.depthFirstForEach(cb, order);
-    if (this.right) this.right.depthFirstForEach(cb, order);
-    cb(this.value);
-  } else {
-    if (this.left) this.left.depthFirstForEach(cb, order);
-    cb(this.value);
-    if (this.right) this.right.depthFirstForEach(cb, order);
-  }
-};
-// var testArr = [];
-// //! tree.depthFirstForEach(function(val){ testArr.push(val); }, 'in-order')
-// BinarySearchTree.prototype.depthFirstForEach = function (cb, order) {};
+}
+console.log(factorear(5)); //.toEqual([1,5]);
+console.log(factorear(9)); //.toEqual([1,3,3]);
+console.log(factorear(180)); // .toEqual([1,2,2,3,3,5]);
+console.log(factorear(32)); // .toEqual([1,2,2,2,2,2]);
+console.log(factorear(33)); //.toEqual([1,3,11]);
 
-// //todo: de izqu. a derecha
-// //? recursión, queue, cb, y objetos doblemente anidados usando clases constructoras
-//   testArr = [];
-//  cb(8)  =>  function(8){ testArr.push(8); } <= testArr = [8]
-BinarySearchTree.prototype.breadthFirstForEach = function (cb, queue = []) {
-  if (this.left) queue.push(this.left);
-  if (this.right) queue.push(this.right);
-  cb(this.value);
-  if (queue.length > 0) {
-    let subTree = queue.shift();
-    subTree.breadthFirstForEach(cb, queue);
-  }
-};
-const testTree = new BinarySearchTree(10);
-testTree.insert(14);
-testTree.insert(20);
-testTree.insert(8);
-testTree.insert(11);
-console.log(testTree.size());
-console.log(testTree.contains(11));
-console.log(testTree.depthFirstForEachSimple());
+//!SORT
+var arr1 = [2, 32, 1, 4];
+var ordSort = arr1.sort((a, b) => a - b);
+// (4) [1, 2, 4, 32]
+console.log(ordSort);
 
-console.log(testTree);
-// No modifiquen nada debajo de esta linea
+//todo: Algoritmos de Ordenamiento. Todos toman lista desordenada y retornan lista ordenada
+//? se necesitan 2 iteradores for{for}
+
+//                                                                  i i+1
+//    [5, 1, 4, 2, 8]    [1, 5, 4, 2, 8]  swap = true;    [1, 2, 4, 5, 8]      swap = false;
+//         [1, 2, 5, 4, 8] swap = true
+function bubbleSort(array) {
+  // Implementar el método conocido como bubbleSort para ordenar de menor a mayor
+  // el array recibido como parámetro
+  // Devolver el array ordenado resultante
+  //                   i
+  // Tu código: -> [1, 4, 5]       value in time swap -> false
+  let swap = true;
+  while (swap) {
+    swap = false;
+    for (let i = 0; i < array.length - 1; i++) {
+      if (array[i] > array[i + 1]) {
+        let aux = array[i];
+        array[i] = array[i + 1];
+        array[i + 1] = aux;
+        swap = true;
+      }
+    }
+  }
+  return array;
+}
+console.log(bubbleSort([5, 1, 4]));
+// console.log(bubbleSort([5, 1, 4, 2, 8]));
+//.toEqual([1, 2, 4, 5, 8])
+
+function insertionSort(array) {
+  // <- [5, 1, 4]
+  // Implementar el método conocido como insertionSort para ordenar de menor a mayor
+  // el array recibido como parámetro utilizando arreglos
+  // Devolver el array ordenado resultante
+  // Tu código:
+  for (let i = 1; i < array.length; i++) {
+    for (let j = i; j >= 1; j--) {
+      if (array[j] < array[j - 1]) {
+        let aux = array[j];
+        array[j] = array[j - 1];
+        array[j - 1] = aux;
+      } else {
+        j = 0;
+      }
+    }
+  }
+  return array;
+}
+//      j-1 j
+//                i
+//      [1, 3, 4, 5]
+console.log(insertionSort([5, 1, 4, 3]));
+
+function selectionSort(array) {
+  // Implementar el método conocido como selectionSort para ordenar de menor a mayor
+  // el array recibido como parámetro utilizando dos arreglos
+  // Devolver el array ordenado resultante
+  // Tu código:
+  for (let i = 0; i < array.length - 1; i++) {
+    for (let j = i + 1; j < array.length; j++) {
+      if (array[j] < array[i]) {
+        let aux = array[i];
+        array[i] = array[j];
+        array[j] = aux;
+      }
+    }
+  }
+  return array;
+}
+//                j
+//             i
+//      [1, 3, 4, 5]
+console.log(selectionSort([5, 1, 4, 3]));
+// No modificar nada debajo de esta línea
 // --------------------------------
 
 module.exports = {
-  BinarySearchTree,
+  factorear,
+  bubbleSort,
+  insertionSort,
+  selectionSort,
 };
 
-/*
-  if( !this.left && !this.rigth) return 1 ;
-                                       1 + f()
-  if(this.left && !this.rigth) return 1 + this.left.size(); 
-  if( this.rigth&& !this.left) return 1 + this.rigth.size() 
-  if(this.rigth && this.left) return 1 + this.rigth.size() + this.left.size();
+function insertionSortCarlos(array) {
+  // Implementar el método conocido como insertionSort para ordenar de menor a mayor
+  // el array recibido como parámetro utilizando arreglos
+  // Devolver el array ordenado resultante
+  // Tu código:
+  for (let i = 1; i < array.length; i++) {
+    for (let j = i; j >= 1; j--) {
+      if (array[j] < array[j - 1]) {
+        let aux = array[j];
+        array[j] = array[j - 1];
+        array[j - 1] = aux;
+      } else {
+        j = 0;
+      }
+    }
+  }
+  return array;
 }
-*/
+
+console.log(insertionSortCarlos([5, 1, 4, 2, 8]));

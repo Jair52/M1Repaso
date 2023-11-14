@@ -15,7 +15,7 @@ Implementar la clase LinkedList, definiendo los siguientes métodos:
   En caso de que la búsqueda no arroje resultados, search debe retornar null.
 */
 function LinkedList(id) {
-  this.head = null;
+  this.head = null,
   this._length = 0;
 }
 
@@ -24,23 +24,23 @@ function Node(value) {
   this.next = null;
 } // --> const nodito = new Node(3); --> {value:3, next:null}
 
-LinkedList.prototype.add = function(value){
+LinkedList.prototype.add = function(value) {
   const newNode = new Node(value);
-  if(this.head === null){
+  //if(this.head === null){ // (this.head)    (null) <-- false    ({}) <-- true
+  if(!this.head){
     this.head = newNode;
-    this._length++;
   }else{
     let current = this.head;
-    while (current.next !== null) {
+    while(current.next){ // (null) <- false   ({}) <-- true
       current = current.next;
     }
     current.next = newNode;
   }
-  this._length++;
+  this._length++
   return newNode;
 }
 
-LinkedList.prototype.remove = function(){
+LinkedList.prototype.remove = function(value) {
   if(!this.head) return null;
   var current = this.head;
   if(!this.head.next){ // el next que sigue al head es null
@@ -57,9 +57,23 @@ LinkedList.prototype.remove = function(){
     return valueCopy;
   }
 }
+//function(nodeValue) {return nodeValue === 'two'} ---> true OR false
+/*//!Busqueda normal
+LinkedList.prototype.search = function (value){
+  if(!this.head) return null;
+  var current = this.head;
+  while (current) {
+    if(current.value === value){
+      return current.value;
+    }
+    current = current.next;
+  }
+  return null;
+}
+*/
 
-LinkedList.prototype.search = function(valueOrcb){
-  if(this.head === 0 ) return null;
+LinkedList.prototype.search = function (valueOrcb){
+  if(!this.head) return null;
   var current = this.head;
   if(typeof valueOrcb === "function"){
     while (current) {
@@ -82,7 +96,7 @@ const listTest = new LinkedList() // <== {head:null, _length :0}
 listTest.add(8);
 listTest.add(12);
 listTest.add(4);
-listTest.remove();
+// listTest.remove();
 console.log(listTest.search(12));
 console.log(listTest)
 
@@ -132,6 +146,7 @@ HashTable.prototype.set = function(key, value){
   this.buckets[numBox][key] = value;
   return this.buckets;
 }
+
 
 HashTable.prototype.get = function(key){
   let numBox = this.hash(key);

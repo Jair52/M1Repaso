@@ -1,149 +1,197 @@
 "use strict";
 
-/*
-Definir las funciones recursivas nFactorial y nFibonacci.
-
-nFactorial(n) debe retornar el factorial de n sabiendo que, siendo n un número natural, 
-su factorial (representado como n!) es el producto de n por todos los números naturales 
-menores que él y mayores a 0. Ejemplo: 5! = 5 * 4 * 3 * 2 * 1
-
-nFibonacci(n) debe retornar el enésimo número de la secuencia de Fibonacci, tomando al 0 y al 1, respectivamente, 
-como primer y segundo elementos de la misma, y sabiendo que cualquier elemento que se agregue a esta secuencia 
-será el resultado de la suma del último elemento y el anterior.
-Ejemplo: nFibonacci(7) retornará 13, ya que 13 es el dígito que está en la posición 7 de la secuencia.
-
--> pos 7    0  1  2  3  4  5  6  7
-Secuencia:  0, 1, 1, 2, 3, 5, 8, 13, 21, 34, ... 
-
-
-Como ejercicio adicional y completamente opcional, al terminar de resolver este problema pueden intentar 
-definir funciones que logren los mismos resultados pero de manera iterativa.
+/* EJERCICIO 1
+Implementar la clase LinkedList, definiendo los siguientes métodos:
+  - add: agrega un nuevo nodo al final de la lista;
+  - remove: elimina el último nodo de la lista y retorna su valor (tener en cuenta el 
+    caso particular de una lista de un solo nodo y de una lista vacía);
+  - search: recibe un parámetro y lo busca dentro de la lista, con una particularidad: el parámetro puede 
+  ser un valor o un callback. En el primer caso, buscamos un nodo cuyo valor coincida con lo buscado; en 
+  el segundo, buscamos un nodo cuyo valor, al ser pasado como parámetro del callback, retorne true. 
+  * (linkedList.search( function(nodeValue) {return nodeValue === 'two'})) --> true OR false
+  * --> .toBe('two');
+  EJEMPLO 
+  search(3) busca un nodo cuyo valor sea 3;
+  search(isEven), donde isEven es una función que retorna true cuando recibe por parámetro un número par, busca un nodo cuyo valor sea un número par.
+  En caso de que la búsqueda no arroje resultados, search debe retornar null.
 */
 
-// Ejemplo: 5! = 5 * 4 * 3 * 2 * 1   - !0 -> 1
-// 5! = 5 * 4 * 3 * 2 * 1  =>     5 * 4!    --   4! =  4 * 3!
-//  3! === 3 * 2 * 1                             4! =  4 *  3 * 2 * 1
-function nFactorial(n) {
-  // -> 6
-  // caso base, corte
-  if (n < 0) return 0;
-  if (n === 0 || n === 1) return 1;
-  return n * nFactorial(n - 1);
+function LinkedList(id) {
+  this.head = null;
+  this._length = 0;
 }
-console.log(nFactorial(3)); //.toBe(6);
-console.log(nFactorial(5)); //.toBe(120);
-console.log(nFactorial(15)); //.toBe(1307674368000);
-/*
-nFactorial(3)
-     return    3  *   nFactorial(2)
-                           2   *  nFactorial(1)
-                                      1
-                          2
-                6
-   return   3  *    (2 * (1))
+function Node(value) {
+  this.value = value;
+  this.next = null;
+} // --> const nodito = new Node(3);  --> {value:3, next:null}
 
-*/
-// -> pos 7    0  1  2  3
-// Secuencia:  0, 1, x, x
-//                      pos3 =  pos1    +     pos2
-//                                1           pos2 = pos1 + pos0
-//                                                     1  +  0
-//                                              1
-//                                 2
-//  0, 1, 1, 2, 3, 5, 8, 13
-function nFibonacci(n) {
-  // caso base, corte
-  if (n === 0) return 0;
-  if (n === 1) return 1;
-  return nFibonacci(n - 2) + nFibonacci(n - 1);
+LinkedList.prototype.add = function (value) {
+  const newNode = new Node(value);
+  // if(this.head===null){ // (this.head)   (null) <- false    ({}) <- true
+  if (!this.head) {
+    this.head = newNode;
+  } else {
+    let current = this.head;
+    while (current.next) {
+      // (null) <- false   ({}) <- true
+      current = current.next;
+    }
+    current.next = newNode;
+  }
+  this._length++;
+  return newNode;
+};
+
+LinkedList.prototype.remove = function () {
+  if (!this.head) return null;
+  var current = this.head;
+  if (!this.head.next) {
+    // el next que sigue al head es null <- this.head.next === null
+    this.head = null;
+    this._length--;
+    return current.value;
+  } else {
+    while (current.next.next) {
+      // ({}) <- true   (null) <- false
+      current = current.next;
+    } // aquí va a avanzar hasta no el último next, sino uno anterior
+    console.log("--current--> ", current);
+    const valueCopy = current.next.value;
+    current.next = null;
+    this._length--;
+    return valueCopy;
+  }
+};
+// function(nodeValue) {return nodeValue === 'two'})) --> true OR false
+LinkedList.prototype.search = function (valueOrCb) {
+  if (!this.head) return null;
+  var current = this.head;
+  if (typeof valueOrCb === "function") {
+    while (current) {
+      if (valueOrCb(current.value)) {
+        return current.value;
+      }
+      current = current.next;
+    }
+  }
+  while (current) {
+    if (current.value === valueOrCb) {
+      return current.value;
+    }
+    current = current.next;
+  }
+  return null;
+};
+
+const listTest = new LinkedList(); // <== {head:null, _length:0}
+listTest.add(8);
+listTest.add(12);
+listTest.add(4);
+// console.log(listTest.remove());
+// console.log(listTest.remove());
+// console.log(listTest.remove());
+// console.log(listTest.remove());
+console.log(listTest.search(testCb));
+console.log(listTest);
+
+function testCb(nodeValue) {
+  return nodeValue === 2;
 }
-console.log(nFibonacci(4)); // 2
-// nFibonacci(7); //-> 13
-/*
-                                  nF(3)
-          return    ->     nF(1)    +                   nF(2)
-                              1     +    return -> nF(0)   +   nF(1)
-                                                      0    +    1
-                                                   1
-                                2                    
+/* EJERCICIO 2
+Implementar la clase HashTable.
+Nuetra tabla hash, internamente, consta de un arreglo de buckets (slots, contenedores, o casilleros; es decir, posiciones posibles para almacenar la información), donde guardaremos datos en formato clave-valor (por ejemplo, {instructora: 'Ani'}).
+Para este ejercicio, la tabla debe tener 35 buckets (numBuckets = 35). (Luego de haber pasado todos los tests, a modo de ejercicio adicional, pueden modificar un poco la clase para que reciba la cantidad de buckets por parámetro al momento de ser instanciada.)
 
+La clase debe tener los siguientes métodos:
+  - hash: función hasheadora que determina en qué bucket se almacenará un dato. Recibe un input alfabético, 
+  suma el código numérico de cada caracter del input (investigar el método charCodeAt de los strings) y 
+  calcula el módulo de ese número total por la cantidad de buckets; de esta manera determina la posición 
+  de la tabla en la que se almacenará el dato.
+  - set: recibe el conjunto clave valor (como dos parámetros distintos), hashea la clave invocando al método 
+  hash, y almacena todo el conjunto en el bucket correcto.
+  - get: recibe una clave por parámetro, y busca el valor que le corresponde en el bucket correcto de la tabla.
+  - hasKey: recibe una clave por parámetro y consulta si ya hay algo almacenado en la tabla con esa clave 
+  (retorna un booleano).
+
+Ejemplo: supongamos que quiero guardar {instructora: 'Ani'} en la tabla. Primero puedo chequear, con hasKey, 
+si ya hay algo en la tabla con el nombre 'instructora'; luego, invocando set('instructora', 'Ani'), 
+se almacenará el par clave-valor en un bucket específico (determinado al hashear la clave)
 */
-
-/*
-Implementar la clase Queue, sabiendo que es una estructura de tipo FIFO, donde el primer elemento que 
-ingresa es el primero que se quita. Definir los siguientes métodos:
-  - enqueue: agrega un valor respetando el orden.
-  - dequeue: remueve un valor respetando el orden. Retorna undefined cuando la queue está vacía.
-  - size: retorna el tamaño (cantidad de elementos) de la queue.
-  
-  Extras
-  - changeFirstElement: cambia el elemento que se encuentra al inicio de la queue
-  - changeLastElement: cambia el elemento que se encuentra al final de la queue
-
-  * practicar pasando el modo Function constructora a Clase Constructora (Class)
-  
-Pueden utilizar class o función constructora.
-*/
-
-// CLASES CONSTRUCTORAS -> OBJ de props. usando el THIS <- Queue { data: [] }
-// const Queue = {data:[]}
-function Queue() {
-  //* THIS
-  this.data = [];
-  // this.data
-  // this.enqueue
-  // this.size
+function HashTable() {
+  this.buckets = [];
+  this.numBuckets = 35;
 }
 
-Queue.prototype.enqueue = function (value) {
-  let result = this.data.push(value);
-  return result;
+HashTable.prototype.hash = function (str) {
+  var result = 0;
+  for (let i = 0; i < str.length; i++) {
+    result += str[i].charCodeAt();
+  }
+  return result % this.numBuckets;
 };
-Queue.prototype.dequeue = function () {
-  // this.data
-  // this.enqueue
-  // this.size
-  if (this.size() === 0) return undefined; // this.data.length;
-  let result = this.data.shift();
-  return result;
-};
-Queue.prototype.size = function () {
-  return this.data.length;
-};
-Queue.prototype.changeFirstElement = function (val) {
-  this.data[0] = val;
-  return this.data;
-};
-Queue.prototype.changeLastElement = function (val) {
-  let pos = this.size() - 1
-  this.data[pos] = val;
-  return this.data;
-};
-//   0 1 2
-//  [1,2,3] -> 3
-// * INSTANCIAMOS la Clase para obtener el molde de la CLASE OBJETO CREADA
-const testMyQueue = new Queue();
 
-testMyQueue.enqueue(8);
-testMyQueue.enqueue(3);
-testMyQueue.enqueue(1);
-// testMyQueue.dequeue();
-console.log(testMyQueue.size());
+HashTable.prototype.set = function (key, value) {
+  if (typeof key !== "string") throw TypeError("Keys must be strings");
+  let numBox = this.hash(key);
 
-console.log(testMyQueue);
-console.log(testMyQueue.changeFirstElement(32))
-console.log(testMyQueue.changeLastElement(555))
-/*⚠️ No modificar nada debajo de esta línea ⚠️*/
+  if (this.buckets[numBox] === undefined) {
+    this.buckets[numBox] = {};
+  }
+  this.buckets[numBox][key] = value;
+  return this.buckets;
+};
+HashTable.prototype.get = function (key) {
+  let numBox = this.hash(key);
+  if (this.buckets[numBox] && this.buckets[numBox][key]) {
+    return this.buckets[numBox][key];
+  }
+  return null;
+};
+HashTable.prototype.hasKey = function (key) {
+  const result = this.get(key);
+  if (result) return true;
+  else return false;
+};
+
+const hashTest = new HashTable();
+
+console.log(hashTest);
+console.log(hashTest.hash("pepe"));
+// No modifiquen nada debajo de esta linea
+// --------------------------------
 
 module.exports = {
-  Queue,
-  nFactorial,
-  nFibonacci,
+  Node,
+  LinkedList,
+  HashTable,
 };
 
 /*
-                                  nF(60)
-          return    ->     nF(58)    +                   nF(59)
-                        
-
+                                    current.next.next     current.next = null 
+LinkedList { head: Node { value: 8,
+                          next: Node { value: 12, 
+                                       next: Node { value: 4, 
+                                                    next: null } } },
+  _length: 3 }
 */
+
+console.log("p".charCodeAt()); // -> ascii de "p" -> 112
+console.log("e".charCodeAt()); // -> ascii de "e" -> 101
+console.log("p".charCodeAt()); // -> ascii de "p" -> 112
+console.log("e".charCodeAt()); // -> ascii de "e" -> 101
+var result =
+  "p".charCodeAt() + "e".charCodeAt() + "p".charCodeAt() + "e".charCodeAt();
+console.log(result);
+
+// resto no mayor a 3 <- devuelve valor entre 0 y 2
+//   9 % 3   ->  0    7 % 3 -> 1     11 % 3 -> 2
+
+var resultArr = [];
+resultArr[34] = null;
+resultArr[5] = {};
+resultArr[5].edad = 87;
+resultArr[4] = {};
+resultArr[4].edad = 23;
+resultArr[4].nana = "nene";
+console.log(resultArr[2]);
+console.log(resultArr);
